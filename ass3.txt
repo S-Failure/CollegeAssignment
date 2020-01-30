@@ -1,0 +1,436 @@
+/*
+Name : Patil Utkarsh
+Class : TY BSc CS Sem-6
+Div : A
+Faculty Name : Shagufta mam
+PC No : SRKI-048
+Enrollment No : E17111920310101
+Subject : PHP Programming-2
+Data : 03/01/2020
+Assignment : 2 and 3
+Aim : Implementing class and object concept with database connection [UPDATE & VIEW operations] and ERROR HANDLING in PHP.
+Program : Insert data in order1 table and Updating data using vieworder(id), updorder() and use try catch in update
+*/
+
+
+
+
+DbCon.php
+
+<?php
+
+class DbCon
+{
+    private $host = "localhost";
+    private $user = "root";
+    private $password = "";
+    private $dbname = "PHP_CRUD_OOP";
+    
+    protected $con;
+    
+    public function __construct() {
+        if(!isset($this->con)){
+            $this->con = mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
+            
+            if(!$this->con){
+                echo "Can't connect to database server.";
+                exit();
+            }
+            else
+            {
+                echo "Connected.";
+            }
+        }
+        return $this->con;
+    }
+}
+?>
+
+
+Operation.php
+
+
+<?php
+
+include_once 'DbCon.php';
+
+class Operation extends DbCon
+{
+    public function __construct() {
+        parent::__construct();
+    }
+    
+    public function select($query)
+    {
+        $result = mysqli_query($this->con, $query);
+        
+        if(!$result){
+            echo "Error in Crud Select.";
+            return false;
+        }
+        
+        $rows = array();
+        
+        while($row = $result->fetch_array())
+        {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function executeQuery($query)
+    {
+        $result = mysqli_query($this->con,$query);
+        
+        if(!$result){
+            echo "Error Can't execute query.";
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    
+    public function updorder()
+    {
+        
+        if(isset($_POST['update']))
+        {
+            $operation = new Operation();
+            $id = $operation->escapeString($_POST['id']);
+            $name = $operation->escapeString($_POST['name']);
+            $quantity = $operation->escapeString($_POST['quantity']);
+            $price = $operation->escapeString($_POST['price']);
+            $custid = $operation->escapeString($_POST['cust_id']);
+            $date = $operation->escapeString($_POST['date']);
+            try{
+            $query = "update order1 set prod_name = '$name', order_quantity = $quantity, order_price = $price,cust_id = $custid, order_created = '$date'  where order_id = $id ";
+    
+            $result = $operation->executeQuery($query);
+            } 
+            catch (Exception $ex)
+            {
+                echo "Error in Update : ".$ex;
+            }
+            if($result){
+                header("Location:ViewRecord.php");
+            }
+        }  
+    }
+
+
+    public function vieworder($id)
+    {
+        $query = "select * from order1 where order_id = $id";
+        $result = mysqli_query($this->con, $query);
+        
+        if(!$result){
+            echo "Error in Crud vireorder.";
+            return false;
+        }
+        return $result;
+    }
+    
+    public function escapeString($value)
+    {
+        return $this->con->real_escape_string($value);
+    }
+}
+
+?>
+
+
+
+ViewRecord.php
+
+
+<?php
+
+include_once 'Operation.php';
+
+$operation = new Operation();
+
+$query = "select * from order1";
+
+$result = $operation->select($query);
+
+?>
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>View Data</title>
+    </head>
+    <body>
+        <a href="Add.php">Add Data</a>
+        
+        <table border="0">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Product Name</th>
+                    <th>Order Quantity</th>
+                    <th>Order Price</th>
+                    <th>Customer ID</th>
+                    <th>Order Created</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <?php
+            
+            foreach($result as $key=>$res)
+            {
+                echo "<tbody>";
+                    echo "<tr>";
+                        echo "<td>".$res['order_id']."</td>";
+                        echo "<td>".$res['prod_name']."</td>";
+                        echo "<td>".$res['order_quantity']."</td>";
+                        echo "<td>".$res['order_price']."</td>";
+                        echo "<td>".$res['cust_id']."</td>";
+                        echo "<td>".$res['order_created']."</td>";
+                        echo "<td><a href=\"UpdateOrder.php?id=$res[order_id]\">Edit</a></td>";
+                        echo "<td><a href=\"Delete.php?id=$res[order_id]\" onClick=\"return confirm('Are you sure you want to delete?')\">Delete</a></td>";
+                    echo "</tr>";
+                echo "</tbody>";
+            }
+            ?>
+        </table>
+
+        <?php
+            
+        ?>
+    </body>
+</html>
+
+
+
+
+Add.php
+
+
+<?php
+
+include_once 'Operation.php';
+
+$operation = new Operation();
+
+$query = "select * from customer";
+
+$result = $operation->select($query);
+
+?>
+
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Data</title>
+    </head>
+    <body>
+        <a href="ViewRecord.php">Home</a>
+        
+        <form action="AddData.php" method="POST">
+            <table border="0">
+                <tr>
+                    <td>Product Name</td>
+                    <td><input type="text" name="name"></td>
+                </tr>
+                <tr>
+                    <td>Order Quantity</td>
+                    <td><input type="text" name="quantity"></td>
+                </tr>
+                <tr>
+                    <td>Order Price</td>
+                    <td><input type="text" name="price"></td>
+                </tr>
+                <tr>
+                    <td>Customer Name</td>
+                    <td>
+                        <select name="cust_id">
+                            <option value="-1">Select Name</option>
+                        <?php
+                        foreach ($result as $key=>$res)
+                        {
+                            echo "<option value=".$res['cust_id'].">".$res['cust_name']."</option>";
+                        }
+                        ?>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td></td>
+                    <td><input type="submit" name="submit" value="AddData"></td>
+                </tr>
+            </table>
+
+        </form>
+        
+    </body>
+</html>
+
+
+
+AddData.php
+
+
+<?php
+
+include_once 'Operation.php';
+
+$operation = new Operation();
+
+if(isset($_POST['submit']))
+{
+    $name = $operation->escapeString($_POST['name']);
+    $price = $operation->escapeString($_POST['price']);
+    $quantity = $operation->escapeString($_POST['quantity']);
+    $id = $operation->escapeString($_POST['cust_id']);
+    $date = date('y-m-d h:i:s', time());
+    
+    $query = "insert into order1(`prod_name`, order_quantity, order_price, cust_id, `order_created`) values('$name', $quantity,$price,$id,'$date')";
+    
+    $result = $operation->executeQuery($query);
+    if($result){
+        echo "<font color='green'>Added Successfully";
+        echo "<br/><a href='ViewRecord.php'>View Data</a>";
+        header("Location:ViewRecord.php");   
+    }
+    else{
+        echo "<font color='red'>Added failed.";
+    }
+}
+?>
+
+
+
+UpdateOrder.php
+
+
+<?php
+
+include_once 'Operation.php';
+
+$operation = new Operation();
+
+$id = $operation->escapeString($_GET['id']);
+
+$result = $operation->vieworder($id);
+
+foreach($result as $key=>$res)
+{
+    $name = $res['prod_name'];
+    $quantity = $res['order_quantity'];
+    $price = $res['order_price'];
+    $cust_id = $res['cust_id'];
+    $date = $res['order_created'];
+}
+
+$query2 = "select * from customer";
+
+$result2 = $operation->select($query2);
+
+?>
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Data</title>
+    </head>
+    <body>
+        <a href="ViewRecord.php">Home</a>
+        
+        <form action="UpdateData.php" method="POST">
+            <table border="0">
+                <tr>
+                    <td><input type="hidden" name="id" value="<?php echo $id?>"></td>
+                </tr>
+                <tr>
+                    <td>Product Name</td>
+                    <td><input type="text" name="name" value="<?php echo $name?>"></td>
+                </tr>
+                <tr>
+                    <td>Order Quantity</td>
+                    <td><input type="text" name="quantity" value="<?php echo $quantity?>"></td>
+                </tr>
+                <tr>
+                    <td>Order Price</td>
+                    <td><input type="text" name="price" value="<?php echo $price?>"></td>
+                </tr>
+                <tr>
+                    <td>Customer Name</td>
+                    <td>
+                        <select name="cust_id">
+                            <option value="-1">Select Name</option>
+                        <?php
+                        foreach ($result2 as $key=>$res2)
+                        {
+                            echo "<option value=".$res2['cust_id'].">".$res2['cust_name']."</option>";
+                        }
+                        ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Order Created</td>
+                    <td><input type="text" readonly="true" name="date" value="<?php echo $date?>"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" name="update" value="UpdateData"></td>
+                </tr>
+            </table>
+
+        </form>
+        
+    </body>
+</html>
+
+
+UpdateData.php
+
+
+<?php
+
+include_once 'Operation.php';
+
+$operation = new Operation();
+
+$operation->updorder();
+
+?>
+
+
+Delete.php
+
+
+<?php
+
+include_once 'Operation.php';
+
+$operation = new Operation();
+
+$id = $operation->escapeString($_GET['id']);
+
+$query = "delete from order1 where order_id = $id";
+
+$result = $operation->executeQuery($query);
+
+if($result){
+    header("Location:ViewRecord.php");
+}
+
+?>
+
+
+
+
+
+

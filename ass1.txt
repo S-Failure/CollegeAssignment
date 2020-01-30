@@ -1,0 +1,147 @@
+/*
+Name : Patil Utkarsh
+Class : TY BSc CS Sem-6
+Div : A
+Faculty Name : Sweta mam
+PC No : SRKI-054
+Enrollment No : E17111920310101
+Subject : PHP Programming-2
+Data : 19/12/2019
+Assignment : 1
+Program : view record from Order table.
+*/
+
+
+DBCon.php
+
+
+<?php
+
+class DbCon
+{
+    private $host = "localhost";
+    private $user = "root";
+    private $password = "admin123";
+    private $dbname = "PHP_OOP_CRUD";
+    
+    protected $con;
+    
+    public function __construct() {
+        if(!isset($this->con)){
+            $this->con = mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
+            
+            if(!$this->con){
+                echo "Can't connect to database server.";
+                exit();
+            }
+            else
+            {
+                echo "Connected.";
+            }
+        }
+        return $this->con;
+    }
+}
+?>
+
+
+Operation.php
+
+
+<?php
+
+include_once 'DbCon.php';
+
+class Operation extends DbCon
+{
+    public function __construct() {
+        parent::__construct();
+    }
+    
+    public function select($query)
+    {
+        $result = mysqli_query($this->con, $query);
+        
+        if(!$result){
+            echo "Error in Crud Select.";
+            return false;
+        }
+        
+        $rows = array();
+        
+        while($row = $result->fetch_array())
+        {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+}
+
+?>
+
+
+ViewRecord.php
+
+
+<?php
+
+include_once 'Operation.php';
+
+$operation = new Operation();
+
+$query = "select * from Order1";
+
+$result = $operation->select($query);
+
+?>
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>View Data</title>
+    </head>
+    <body>
+        <a href="#">Add Data</a>
+        
+        <table border="0">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Product Name</th>
+                    <th>Order Quantity</th>
+                    <th>Order Price</th>
+                    <th>Customer ID</th>
+                    <th>Order Created</th>
+                </tr>
+            </thead>
+            <?php
+            
+            foreach($result as $key=>$res)
+            {
+                echo "<tbody>";
+                    echo "<tr>";
+                        echo "<td>".$res['order_id']."</td>";
+                        echo "<td>".$res['Prod_name']."</td>";
+                        echo "<td>".$res['order_quantity']."</td>";
+                        echo "<td>".$res['order_price']."</td>";
+                        echo "<td>".$res['cust_id']."</td>";
+                        echo "<td>".$res['order_created']."</td>";
+                    echo "</tr>";
+                echo "</tbody>";
+            }
+            ?>
+        </table>
+
+        <?php
+            
+        ?>
+    </body>
+</html>
+
+
+
+
+
+
