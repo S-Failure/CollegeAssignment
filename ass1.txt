@@ -2,146 +2,60 @@
 Name : Patil Utkarsh
 Class : TY BSc CS Sem-6
 Div : A
-Faculty Name : Sweta mam
-PC No : SRKI-054
+Faculty Name :
+PC No : SRKI-048
 Enrollment No : E17111920310101
-Subject : PHP Programming-2
-Data : 19/12/2019
+Subject : Java Programming-2
+Data : 07/01/2020
 Assignment : 1
-Program : view record from Order table.
+Program : Thread in java
 */
 
+package ass1;
 
-DBCon.php
+import java.util.Scanner;
 
-
-<?php
-
-class DbCon
+class MyThread extends Thread 
 {
-    private $host = "localhost";
-    private $user = "root";
-    private $password = "admin123";
-    private $dbname = "PHP_OOP_CRUD";
-    
-    protected $con;
-    
-    public function __construct() {
-        if(!isset($this->con)){
-            $this->con = mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
-            
-            if(!$this->con){
-                echo "Can't connect to database server.";
-                exit();
-            }
-            else
-            {
-                echo "Connected.";
-            }
-        }
-        return $this->con;
-    }
-}
-?>
+    String name;
+    Thread t;
 
-
-Operation.php
-
-
-<?php
-
-include_once 'DbCon.php';
-
-class Operation extends DbCon
-{
-    public function __construct() {
-        parent::__construct();
-    }
-    
-    public function select($query)
+    MyThread(String thread)
     {
-        $result = mysqli_query($this->con, $query);
-        
-        if(!$result){
-            echo "Error in Crud Select.";
-            return false;
-        }
-        
-        $rows = array();
-        
-        while($row = $result->fetch_array())
+        name = thread; 
+        t = new Thread(this, name);
+        System.out.println("New thread: " + t);
+        t.start();
+    }
+
+    public void run() 
+    {
+        try 
         {
-            $rows[] = $row;
+            for(int i = 0; i < name.length(); i+=2) 
+            {
+                System.out.println(name.charAt(i) + "\n" + name.charAt(i+1));
+                Thread.sleep(1000);
+            }    
+        }catch (InterruptedException e)
+        {
+            System.out.println(name + "Interrupted");
         }
-        return $rows;
+        System.out.println(name + " exiting.");
     }
 }
 
-?>
-
-
-ViewRecord.php
-
-
-<?php
-
-include_once 'Operation.php';
-
-$operation = new Operation();
-
-$query = "select * from Order1";
-
-$result = $operation->select($query);
-
-?>
-
-<!DOCTYPE html>
-
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>View Data</title>
-    </head>
-    <body>
-        <a href="#">Add Data</a>
-        
-        <table border="0">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Product Name</th>
-                    <th>Order Quantity</th>
-                    <th>Order Price</th>
-                    <th>Customer ID</th>
-                    <th>Order Created</th>
-                </tr>
-            </thead>
-            <?php
-            
-            foreach($result as $key=>$res)
-            {
-                echo "<tbody>";
-                    echo "<tr>";
-                        echo "<td>".$res['order_id']."</td>";
-                        echo "<td>".$res['Prod_name']."</td>";
-                        echo "<td>".$res['order_quantity']."</td>";
-                        echo "<td>".$res['order_price']."</td>";
-                        echo "<td>".$res['cust_id']."</td>";
-                        echo "<td>".$res['order_created']."</td>";
-                    echo "</tr>";
-                echo "</tbody>";
-            }
-            ?>
-        </table>
-
-        <?php
-            
-        ?>
-    </body>
-</html>
-
-
-
-
-
-
+class Ass1 
+{
+    public static void main(String args[])
+    {
+        Scanner take = new Scanner(System.in);
+        String s1,s2;
+        System.out.println("Enter first thread name : ");
+        s1 = take.next();
+        System.out.println("Enter second thread name : ");
+        s2 = take.next();
+        new MyThread(s1);
+        new MyThread(s2);
+    }  
+}

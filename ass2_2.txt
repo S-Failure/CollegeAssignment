@@ -1,0 +1,119 @@
+/*
+Name : Patil Utkarsh
+Class : TY BSc CS Sem-6
+Div : A
+Faculty Name : Charmy mam
+PC No : SRKI-048
+Enrollment No : E17111920310101
+Subject : Java Programming-2
+Data : 18/01/2020
+Assignment : 2 Q2
+Program : Registration form in java applet
+*/
+
+package ass2;
+
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class Ass2_2 extends Applet {
+
+    Label l1, l2, l3, l4, l5, l6, l7, l8, l9,l10;
+    TextField t1, t2, t3, t4, t5, t6;
+    TextArea ta1, ta2;
+    Checkbox c1, c2, c3;
+    Button b1;
+    Choice ch1;
+    CheckboxGroup cbg;
+
+    public void init() {
+        setLayout(null);
+
+        l1 = new Label("UserID :");
+        l1.setBounds(0, 0, 50, 50);
+        add(l1);
+        t1 = new TextField(20);
+        t1.setBounds(130, 10, 150, 20);
+        add(t1);
+
+        l2 = new Label("Password :");
+        l2.setBounds(0, 40, 70, 50);
+        add(l2);
+        t2 = new TextField(20);
+        t2.setBounds(130, 50, 150, 20);
+        add(t2);
+
+        l3 = new Label("Name :");
+        l3.setBounds(0, 80, 70, 50);
+        add(l3);
+        t3 = new TextField(20);
+        t3.setBounds(130, 90, 150, 20);
+        add(t3);
+
+        l4 = new Label("Address :");
+        l4.setBounds(0, 120, 70, 50);
+        add(l4);
+        t4 = new TextField(40);
+        t4.setBounds(130, 130, 150, 20);
+        add(t4);
+
+        l5 = new Label("Country :");
+        l5.setBounds(0, 160, 70, 50);
+        add(l5);
+        ch1 = new Choice();
+        ch1.addItem("INDIA");
+        ch1.addItem("US");
+        ch1.addItem("Australia");
+        ch1.addItem("Sri lanka");
+        ch1.setBounds(130, 170, 150, 20);
+        add(ch1);
+
+        l6 = new Label("ZIP Code :");
+        l6.setBounds(0, 200, 70, 50);
+        add(l6);
+        t5 = new TextField(15);
+        t5.setBounds(130, 210, 150, 20);
+        add(t5);
+
+        l7 = new Label("Email :");
+        l7.setBounds(0, 240, 70, 50);
+        add(l7);
+        t6 = new TextField(30);
+        t6.setBounds(130, 250, 150, 20);
+        add(t6);
+
+        l8 = new Label("Sex :");
+        l8.setBounds(0, 270, 70, 50);
+        add(l8);
+        cbg = new CheckboxGroup();
+        c1 = new Checkbox("MALE", cbg, true);
+        c2 = new Checkbox("FEMALE", cbg, false);
+        c1.setBounds(130, 290, 150, 20);
+        c2.setBounds(130, 310, 150, 20);
+        add(c1);
+        add(c2);
+
+        
+        
+        l9 = new Label("Language :");
+        l9.setBounds(0, 330, 70, 50);
+        add(l9);
+        c1 = new Checkbox("English",true);
+        c1.setBounds(130, 345, 150, 20);
+        add(c1);
+        c2 = new Checkbox("Non English",false);
+        c2.setBounds(130, 375, 150, 20);
+        add(c2);
+        
+        
+        l10 = new Label("About :");
+        l10.setBounds(0, 380, 70, 50);
+        add(l10);
+        ta1 = new TextArea(30,200);
+        ta1.setBounds(130, 410, 150, 20);
+        add(ta1);
+    }
+}
+
+

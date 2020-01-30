@@ -2,434 +2,174 @@
 Name : Patil Utkarsh
 Class : TY BSc CS Sem-6
 Div : A
-Faculty Name : Shagufta mam
+Faculty Name : Charmy mam
 PC No : SRKI-048
 Enrollment No : E17111920310101
-Subject : PHP Programming-2
-Data : 03/01/2020
-Assignment : 2 and 3
-Aim : Implementing class and object concept with database connection [UPDATE & VIEW operations] and ERROR HANDLING in PHP.
-Program : Insert data in order1 table and Updating data using vieworder(id), updorder() and use try catch in update
+Subject : Java Programming-2
+Data : 25/01/2020
+Assignment : 3 Q1 and Q2
+Program : 1) java applet program which has three radio buttons, on click of any radio button perform following
+	     operation
+		a) 1st radiobutton it will draw triangle, 
+		b)2nd radiobutton it will draw rectangle
+		c)3rd radiobutton it will draw oval shape.
+	  2) java applet program which has 3 buttons, on click it generates different graphical shapes.
+	     Take a list box which displays different colours. On selection of the colour, the object should be filled by that colour.
 */
 
 
+package ass3;
 
+import java.applet.Applet;
+import java.awt.*;
+import java.awt.event.*;
 
-DbCon.php
+public class Ass3_1 extends Applet implements ItemListener{
 
-<?php
-
-class DbCon
-{
-    private $host = "localhost";
-    private $user = "root";
-    private $password = "";
-    private $dbname = "PHP_CRUD_OOP";
-    
-    protected $con;
-    
-    public function __construct() {
-        if(!isset($this->con)){
-            $this->con = mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
-            
-            if(!$this->con){
-                echo "Can't connect to database server.";
-                exit();
-            }
-            else
-            {
-                echo "Connected.";
-            }
-        }
-        return $this->con;
-    }
-}
-?>
-
-
-Operation.php
-
-
-<?php
-
-include_once 'DbCon.php';
-
-class Operation extends DbCon
-{
-    public function __construct() {
-        parent::__construct();
-    }
-    
-    public function select($query)
+    Checkbox chTriangle, chRectangle, chOver;
+    CheckboxGroup group;
+    Label lab;
+    @Override
+    public void init()
     {
-        $result = mysqli_query($this->con, $query);
-        
-        if(!$result){
-            echo "Error in Crud Select.";
-            return false;
-        }
-        
-        $rows = array();
-        
-        while($row = $result->fetch_array())
+        group = new CheckboxGroup();
+        chTriangle = new Checkbox("Triangle", group, true);
+        chRectangle = new Checkbox("Rectangle", group, false);
+        chOver = new Checkbox("Ovel Shape", group, false);
+        lab = new Label("I Display Your Selection");
+            
+        chTriangle.addItemListener(this);
+        chRectangle.addItemListener(this);
+        chOver.addItemListener(this);
+
+        add(chTriangle);
+        add(chRectangle);
+        add(chOver);
+    }
+    
+    public void paint(Graphics g)
+    {
+        if(chTriangle.getState() == true)
         {
-            $rows[] = $row;
-        }
-        return $rows;
-    }
-    
-    public function executeQuery($query)
-    {
-        $result = mysqli_query($this->con,$query);
-        
-        if(!$result){
-            echo "Error Can't execute query.";
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
-    
-    public function updorder()
-    {
-        
-        if(isset($_POST['update']))
+            g.drawPolygon(new int[] {80, 120, 160}, new int[] {150, 80, 150}, 3);
+        }   
+        else if(chRectangle.getState() == true)
         {
-            $operation = new Operation();
-            $id = $operation->escapeString($_POST['id']);
-            $name = $operation->escapeString($_POST['name']);
-            $quantity = $operation->escapeString($_POST['quantity']);
-            $price = $operation->escapeString($_POST['price']);
-            $custid = $operation->escapeString($_POST['cust_id']);
-            $date = $operation->escapeString($_POST['date']);
-            try{
-            $query = "update order1 set prod_name = '$name', order_quantity = $quantity, order_price = $price,cust_id = $custid, order_created = '$date'  where order_id = $id ";
-    
-            $result = $operation->executeQuery($query);
-            } 
-            catch (Exception $ex)
-            {
-                echo "Error in Update : ".$ex;
-            }
-            if($result){
-                header("Location:ViewRecord.php");
-            }
-        }  
-    }
-
-
-    public function vieworder($id)
-    {
-        $query = "select * from order1 where order_id = $id";
-        $result = mysqli_query($this->con, $query);
-        
-        if(!$result){
-            echo "Error in Crud vireorder.";
-            return false;
+            g.setColor(Color.blue);
+            g.drawRect(50, 80, 150, 100);
         }
-        return $result;
+        else if (chOver.getState() == true)
+        {
+            g.drawOval(80,80,50,100);  
+        }
     }
     
-    public function escapeString($value)
+    public void itemStateChanged(ItemEvent e)
     {
-        return $this->con->real_escape_string($value);
+        repaint();
     }
 }
 
-?>
+
+----------------------------------------------------------------------------------------------------
 
 
+package ass3;
 
-ViewRecord.php
+import java.applet.Applet;
+import java.awt.*;
+import java.awt.event.*;
+import static java.util.Collections.list;
 
-
-<?php
-
-include_once 'Operation.php';
-
-$operation = new Operation();
-
-$query = "select * from order1";
-
-$result = $operation->select($query);
-
-?>
-
-<!DOCTYPE html>
-
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>View Data</title>
-    </head>
-    <body>
-        <a href="Add.php">Add Data</a>
+public class Ass3_2 extends Applet implements ActionListener{
+    
+    Button btnTriangle, btnRectangle, btnOval;
+    Label lab;
+    List l1 = new List(3);
+    Choice ch = new Choice();
+    
+    public void init() {
+        btnTriangle = new Button("Triangle");
+        btnRectangle = new Button("Rectangle");
+        btnOval = new Button("Ovel Shape");
+        lab = new Label("I Display Your Selection");
         
-        <table border="0">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Product Name</th>
-                    <th>Order Quantity</th>
-                    <th>Order Price</th>
-                    <th>Customer ID</th>
-                    <th>Order Created</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <?php
-            
-            foreach($result as $key=>$res)
+        add(btnTriangle);
+        add(btnRectangle);
+        add(btnOval);
+        
+        ch.add("Red");  
+        ch.add("Green");  
+        ch.add("Blue");
+        
+        add(ch);
+        
+        btnTriangle.addActionListener(this);
+        btnRectangle.addActionListener(this);
+        btnOval.addActionListener(this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Graphics g = getGraphics();
+        String s = ch.getSelectedItem();
+        if(e.getSource() == btnTriangle)
+        {
+            if(s.equals("Red"))
             {
-                echo "<tbody>";
-                    echo "<tr>";
-                        echo "<td>".$res['order_id']."</td>";
-                        echo "<td>".$res['prod_name']."</td>";
-                        echo "<td>".$res['order_quantity']."</td>";
-                        echo "<td>".$res['order_price']."</td>";
-                        echo "<td>".$res['cust_id']."</td>";
-                        echo "<td>".$res['order_created']."</td>";
-                        echo "<td><a href=\"UpdateOrder.php?id=$res[order_id]\">Edit</a></td>";
-                        echo "<td><a href=\"Delete.php?id=$res[order_id]\" onClick=\"return confirm('Are you sure you want to delete?')\">Delete</a></td>";
-                    echo "</tr>";
-                echo "</tbody>";
+                g.setColor(Color.red);
+                g.fillPolygon(new int[] {80, 120, 160}, new int[] {150, 80, 150}, 3); 
             }
-            ?>
-        </table>
-
-        <?php
-            
-        ?>
-    </body>
-</html>
-
-
-
-
-Add.php
-
-
-<?php
-
-include_once 'Operation.php';
-
-$operation = new Operation();
-
-$query = "select * from customer";
-
-$result = $operation->select($query);
-
-?>
-
-
-<!DOCTYPE html>
-
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Add Data</title>
-    </head>
-    <body>
-        <a href="ViewRecord.php">Home</a>
-        
-        <form action="AddData.php" method="POST">
-            <table border="0">
-                <tr>
-                    <td>Product Name</td>
-                    <td><input type="text" name="name"></td>
-                </tr>
-                <tr>
-                    <td>Order Quantity</td>
-                    <td><input type="text" name="quantity"></td>
-                </tr>
-                <tr>
-                    <td>Order Price</td>
-                    <td><input type="text" name="price"></td>
-                </tr>
-                <tr>
-                    <td>Customer Name</td>
-                    <td>
-                        <select name="cust_id">
-                            <option value="-1">Select Name</option>
-                        <?php
-                        foreach ($result as $key=>$res)
-                        {
-                            echo "<option value=".$res['cust_id'].">".$res['cust_name']."</option>";
-                        }
-                        ?>
-                        </select>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td></td>
-                    <td><input type="submit" name="submit" value="AddData"></td>
-                </tr>
-            </table>
-
-        </form>
-        
-    </body>
-</html>
-
-
-
-AddData.php
-
-
-<?php
-
-include_once 'Operation.php';
-
-$operation = new Operation();
-
-if(isset($_POST['submit']))
-{
-    $name = $operation->escapeString($_POST['name']);
-    $price = $operation->escapeString($_POST['price']);
-    $quantity = $operation->escapeString($_POST['quantity']);
-    $id = $operation->escapeString($_POST['cust_id']);
-    $date = date('y-m-d h:i:s', time());
-    
-    $query = "insert into order1(`prod_name`, order_quantity, order_price, cust_id, `order_created`) values('$name', $quantity,$price,$id,'$date')";
-    
-    $result = $operation->executeQuery($query);
-    if($result){
-        echo "<font color='green'>Added Successfully";
-        echo "<br/><a href='ViewRecord.php'>View Data</a>";
-        header("Location:ViewRecord.php");   
-    }
-    else{
-        echo "<font color='red'>Added failed.";
+            if(s.equals("Green"))
+            {
+                g.setColor(Color.green);
+                g.fillPolygon(new int[] {80, 120, 160}, new int[] {150, 80, 150}, 3);
+            }
+            if(s.equals("Blue"))
+            {
+                g.setColor(Color.blue);
+                g.fillPolygon(new int[] {80, 120, 160}, new int[] {150, 80, 150}, 3);
+            }
+        }   
+        else if(e.getSource() == btnRectangle)
+        {
+            if(s.equals("Red"))
+            {
+                g.setColor(Color.red);
+                g.fillRect(50, 80, 150, 100); 
+            }
+            if(s.equals("Green"))
+            {
+                g.setColor(Color.green);
+                g.fillRect(50, 80, 150, 100);
+            }
+            if(s.equals("Blue"))
+            {
+                g.setColor(Color.blue);
+                g.fillRect(50, 80, 150, 100);
+            }
+           
+        }
+        else if (e.getSource() == btnOval)
+        {
+            if(s.equals("Red"))
+            {
+                g.setColor(Color.red);
+                g.fillOval(80,80,50,100);
+            }
+            if(s.equals("Green"))
+            {
+                g.setColor(Color.green);
+                g.fillOval(80,80,50,100);
+            }
+            if(s.equals("Blue"))
+            {
+                g.setColor(Color.blue);
+                g.fillOval(80,80,50,100);
+            }
+        }
     }
 }
-?>
-
-
-
-UpdateOrder.php
-
-
-<?php
-
-include_once 'Operation.php';
-
-$operation = new Operation();
-
-$id = $operation->escapeString($_GET['id']);
-
-$result = $operation->vieworder($id);
-
-foreach($result as $key=>$res)
-{
-    $name = $res['prod_name'];
-    $quantity = $res['order_quantity'];
-    $price = $res['order_price'];
-    $cust_id = $res['cust_id'];
-    $date = $res['order_created'];
-}
-
-$query2 = "select * from customer";
-
-$result2 = $operation->select($query2);
-
-?>
-
-<!DOCTYPE html>
-
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Add Data</title>
-    </head>
-    <body>
-        <a href="ViewRecord.php">Home</a>
-        
-        <form action="UpdateData.php" method="POST">
-            <table border="0">
-                <tr>
-                    <td><input type="hidden" name="id" value="<?php echo $id?>"></td>
-                </tr>
-                <tr>
-                    <td>Product Name</td>
-                    <td><input type="text" name="name" value="<?php echo $name?>"></td>
-                </tr>
-                <tr>
-                    <td>Order Quantity</td>
-                    <td><input type="text" name="quantity" value="<?php echo $quantity?>"></td>
-                </tr>
-                <tr>
-                    <td>Order Price</td>
-                    <td><input type="text" name="price" value="<?php echo $price?>"></td>
-                </tr>
-                <tr>
-                    <td>Customer Name</td>
-                    <td>
-                        <select name="cust_id">
-                            <option value="-1">Select Name</option>
-                        <?php
-                        foreach ($result2 as $key=>$res2)
-                        {
-                            echo "<option value=".$res2['cust_id'].">".$res2['cust_name']."</option>";
-                        }
-                        ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Order Created</td>
-                    <td><input type="text" readonly="true" name="date" value="<?php echo $date?>"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><input type="submit" name="update" value="UpdateData"></td>
-                </tr>
-            </table>
-
-        </form>
-        
-    </body>
-</html>
-
-
-UpdateData.php
-
-
-<?php
-
-include_once 'Operation.php';
-
-$operation = new Operation();
-
-$operation->updorder();
-
-?>
-
-
-Delete.php
-
-
-<?php
-
-include_once 'Operation.php';
-
-$operation = new Operation();
-
-$id = $operation->escapeString($_GET['id']);
-
-$query = "delete from order1 where order_id = $id";
-
-$result = $operation->executeQuery($query);
-
-if($result){
-    header("Location:ViewRecord.php");
-}
-
-?>
-
-
 
 
 
